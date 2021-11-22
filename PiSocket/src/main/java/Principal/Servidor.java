@@ -17,8 +17,11 @@ import java.util.logging.Logger;
 public class Servidor {
     public static void main(String[] args) {
         try {
-            ServerSocket socket = new ServerSocket(432);
+            ServerSocket servidor = new ServerSocket(432);
             System.out.println("Porta 432 aberta!");
+            
+            
+            Socket cliente = servidor.accept();
             System.out.println("Nova	conexão	com	o	cliente	"	+	
 				cliente.getInetAddress().getHostAddress());
             Scanner	scanner	=	new	Scanner(cliente.getInputStream());
