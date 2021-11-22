@@ -4,11 +4,8 @@
  */
 package Principal;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -16,35 +13,88 @@ import java.util.logging.Logger;
  */
 public class Servidor {
     public static void main(String[] args) {
+        ServerSocket servidor = null;
         try {
-            ServerSocket servidor = new ServerSocket(432);
-            System.out.println("Porta 432 aberta!");
+            servidor = new ServerSocket(432);
+            //System.out.println("Porta 432 aberta!");
+            servidor.setReuseAddress(true);
             
             while (true){
                 Socket cliente = servidor.accept();
+                System.out.println("CLiente conectado: "+cliente.toString());
                 
-                //Classe que irá fazer o tratamento da conexão
-                TratamentoClass tratamento = new TratamentoClass(cliente);
+                ClientRun r1 = new ClientRun(cliente);
                 
-                //lidando con threads
-                Thread t = new Thread(tratamento);
-                
+                new Thread(r1).start();
                 //inicialização do thread
-                t.start();
-                
-                
-            
-            Scanner	scanner	=	new	Scanner(cliente.getInputStream());
-            while (scanner.hasNextLine())	{
+                /*Scanner	scanner	=	new	Scanner(cliente.getInputStream());
+                while (scanner.hasNextLine())	{
 				System.out.println(scanner.nextLine());
+                                System.out.println("Scanner rodando no while");
 }
+            }*/
             }
-                
             
         } catch (IOException ex) {
             System.out.println("Falha ao iniciar servidor");
-            Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
+        finally{
+            if (servidor!=null){
+                try {
+                    servidor.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+     
     }
+    public static class ClientRun implements Runnable{
+        private final Socket clienteSocket;
     
-}
+        public ClientRun(Socket socket){
+            this.clienteSocket = socket;
+        }
+
+
+        public void run() {
+            PrintWriter saida = null;
+            BufferedReader entrada= null;
+
+            try {
+                //saida
+                saida= new PrintWriter(clienteSocket.getOutputStream(),true);
+
+                //entrada
+                entrada = new BufferedReader(new InputStreamReader(clienteSocket.
+                        getInputStream()));
+
+                String linha;
+                while ((linha = entrada.readLine()) != null){
+                    System.out.println("Enviado do cliente: "+linha);
+                    saida.println(linha);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally{
+                try {
+                    if (saida !=null){
+                        saida.close();
+                    }
+                    if (entrada != null){
+                        entrada.close();
+                        clienteSocket.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+    }
+
+    }

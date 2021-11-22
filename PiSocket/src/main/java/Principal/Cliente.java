@@ -4,8 +4,7 @@
  */
 package Principal;
 
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -15,28 +14,41 @@ import java.util.logging.Logger;
  *
  * @author danie
  */
-public class Cliente {
+public class Cliente{
+
     public static void main(String[] args) {
-        
-    
-        try {
-            Socket cliente = new Socket("192.168.1.105", 432);
-            System.out.println("CLiente conectado ao servidor");
+
+        try (Socket cliente = new Socket("192.168.1.105", 432)){
             
-            Scanner teclado = new Scanner(System.in);
-            PrintStream saida = new PrintStream(cliente.getOutputStream());
+            //System.out.println("CLiente "+cliente.toString() +" conectado ao servidor");
             
-            while (teclado.hasNextLine()){
-                saida.print(teclado.nextLine()+"\n");
+            //Saida para servidor
+            PrintWriter saida = new PrintWriter(cliente.getOutputStream(), true);
+            
+            //Leitura do servidor
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    cliente.getInputStream()));
+            
+            Scanner scan = new Scanner(System.in);
+            //PrintStream saida = new PrintStream(cliente.getOutputStream());
+            String linha=null;
+            
+            while (!"exit".equalsIgnoreCase(linha)){
+                
+                //leitura do usuario
+                linha = scan.nextLine();
+
+                saida.println(linha);
+                saida.flush();
+                                
+                //imprimindo resposta
+                System.out.println("Resposta do server: " + in.readLine());
             }
-            saida.close();
-            teclado.close();
-            cliente.close();
+            scan.close();
             
-        } catch (IOException ex) {
-            System.out.println("falha na conexão");
-            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
         }
-    
-    }
+       catch (IOException ex) {
+           ex.printStackTrace();
+        }
+}
 }

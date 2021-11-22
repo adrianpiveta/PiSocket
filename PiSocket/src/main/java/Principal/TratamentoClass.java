@@ -13,17 +13,21 @@ import java.util.List;
  */
 class TratamentoClass implements Runnable{
 
-    List<Socket> clientes;
+    
+    Cliente cliente;
+    
     TratamentoClass(Socket cliente) {
-        System.out.println("Nova conexão 	com o cliente	" +
-                    cliente.getInetAddress().getHostAddress());
+        
     }
 
     @Override
     public void run() {
-        for (int i = 0; i < clientes.size(); i++) {
-            
-        }
+        Thread t= new Thread(cliente);
+        t.start();
+    }
+
+    void accept() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }
