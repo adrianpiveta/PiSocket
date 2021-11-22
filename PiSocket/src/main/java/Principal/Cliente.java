@@ -20,14 +20,18 @@ public class Cliente {
         
     
         try {
-            Socket cliente = new Socket("192.168.0.7", 432);
-            PrintStream saida = new PrintStream(cliente.getOutputStream());
+            Socket cliente = new Socket("192.168.1.105", 432);
+            System.out.println("CLiente conectado ao servidor");
+            
             Scanner teclado = new Scanner(System.in);
+            PrintStream saida = new PrintStream(cliente.getOutputStream());
+            
             while (teclado.hasNextLine()){
-                saida.print(teclado.nextLine());
+                saida.print(teclado.nextLine()+"\n");
             }
             saida.close();
             teclado.close();
+            cliente.close();
             
         } catch (IOException ex) {
             System.out.println("falha na conexão");
