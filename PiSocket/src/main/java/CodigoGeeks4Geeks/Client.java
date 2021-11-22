@@ -24,12 +24,10 @@ class Client {
         try (Socket socket = new Socket("192.168.1.105", 1234)) {
             
             // writing to server
-            PrintWriter out = new PrintWriter(
-                socket.getOutputStream(), true);
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
   
             // reading from server
-            BufferedReader in
-                = new BufferedReader(new InputStreamReader(
+            BufferedReader in = new BufferedReader(new InputStreamReader(
                     socket.getInputStream()));
   
             // object of scanner class
