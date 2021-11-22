@@ -4,6 +4,8 @@
  */
 package Principal;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.*;
 import java.util.Scanner;
@@ -14,36 +16,34 @@ import java.util.logging.Logger;
  *
  * @author danie
  */
-public class Servidor {
+public class ServidorTxt {
     public static void main(String[] args) {
         try {
-            ServerSocket servidor = new ServerSocket(432);
-            System.out.println("Porta 432 aberta!");
+            ServerSocket servidor = new ServerSocket(433);
+            System.out.println("Porta 433 server txt aberta!");
             
             while (true){
+                String saida="";
                 Socket cliente = servidor.accept();
+
                 
-                //Classe que irá fazer o tratamento da conexão
-                TratamentoClass tratamento = new TratamentoClass(cliente);
-                
-                //lidando con threads
-                Thread t = new Thread(tratamento);
-                
-                //inicialização do thread
-                t.start();
-                
-                
+            BufferedWriter writer = new BufferedWriter(new FileWriter("D:/"
+                    + "NetBeansProjects/PiSocket/PiSocket/src/main/java/"
+                    + "Principal/SaidaServer.txt", true)); //arquivo escrito
             
             Scanner	scanner	=	new	Scanner(cliente.getInputStream());
             while (scanner.hasNextLine())	{
-				System.out.println(scanner.nextLine());
-}
+				saida+=(scanner.nextLine()+"\n");
             }
+            writer.write(saida);
+            saida="";
+            writer.close();
+        }
                 
             
         } catch (IOException ex) {
             System.out.println("Falha ao iniciar servidor");
-            Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServidorTxt.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
