@@ -16,25 +16,35 @@ import java.util.List;
 public class Servidor {
     
     public static void main(String[] args) {
-        List<PrintStream> clientes = new ArrayList<PrintStream>();
-        ServerSocket servidor = null;
+        new Servidor(432).executa();
+    }
+        private List<PrintStream> clientes = new ArrayList<PrintStream>();
+        private ServerSocket servidor = null;
+        private int porta;
         
-        try {
-            servidor = new ServerSocket(432);
-            //System.out.println("Porta 432 aberta!");
-            servidor.setReuseAddress(true);
+        public Servidor (int porta){
+            this.porta=porta;
+            this.clientes = new ArrayList<PrintStream>();
+        }
             
-            while (true){
-                Socket cliente = servidor.accept();
-                clientes.add(new PrintStream(cliente.getOutputStream()));
-                System.out.println("CLiente conectado: "+cliente.toString());
+        public void executa(){       
+            try {
+                servidor = new ServerSocket(432);
+                System.out.println("Porta 432 aberta!");
+            
+                while (true){
+                    Socket cliente = servidor.accept();
+                    System.out.println("CLiente conectado: "+cliente.toString());
+                    
+                    //adiciona o cliente a lista
+                    this.clientes.add(new PrintStream(cliente.getOutputStream()));
+                    
+                    TrataCliente tc = new TrataCliente(cliente.getInputStream(), this);
                 
-                ClientRun r1 = new ClientRun(cliente, clientes);
-                
-                new Thread(r1).start();
-                //inicialização do thread
-                /*Scanner	scanner	=	new	Scanner(cliente.getInputStream());
-                while (scanner.hasNextLine())	{
+                    new Thread(tc).start();
+                    //inicialização do thread
+                    /*Scanner	scanner	=	new	Scanner(cliente.getInputStream());
+                    while (scanner.hasNextLine())	{
 				System.out.println(scanner.nextLine());
                                 System.out.println("Scanner rodando no while");
 }
@@ -55,6 +65,15 @@ public class Servidor {
             }
         }
     }
+/* //Metodo antigo que não funfou
+    public void distribuiMensagem(List<PrintStream> clientes, String mensagem) {
+            clientes.forEach(x -> x.print(mensagem+"\n"));
+    }
+*/
+    void distribuiMensagem(String mensagem) {
+        clientes.forEach(x -> x.print(mensagem+"\n"));
+    }
+        
     
     
     
@@ -89,7 +108,6 @@ public class Servidor {
                 while ((linha = entrada.readLine()) != null){
                     System.out.println("Enviado do cliente: "+linha);
                     saida.println(linha);
-                    distribuiMensagens(clientes, linha);
                 }
 
             } catch (Exception e) {
@@ -110,10 +128,6 @@ public class Servidor {
             }
 
         }
-        
-        private void distribuiMensagens(List<PrintStream> clientes, String mensagem) {
-            clientes.forEach(x -> x.print(mensagem+"\n"));
-        }
-
+    
     }
 }

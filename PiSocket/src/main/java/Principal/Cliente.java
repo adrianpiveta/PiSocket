@@ -17,35 +17,44 @@ import java.util.logging.Logger;
 public class Cliente{
 
     public static void main(String[] args) {
+        new Cliente("192.168.1.105", 432).executa();
+    }
+    private String host;
+    private int porta;
+    
+    public Cliente(String host, int porta) {
+        this.host=host;
+        this.porta=porta;
+    }
 
+    public void executa(){
         try (Socket cliente = new Socket("192.168.1.105", 432)){
-            
-            //System.out.println("CLiente "+cliente.toString() +" conectado ao servidor");
+            System.out.println("CLiente "+cliente.toString() +" conectado ao servidor");
             
             //Saida para servidor
-            PrintWriter saida = new PrintWriter(cliente.getOutputStream(), true);
+            //PrintWriter saida = new PrintWriter(cliente.getOutputStream(), true);
             
             //Leitura do servidor
-            BufferedReader entrada = new BufferedReader(new InputStreamReader(
-                    cliente.getInputStream()));
+            Recebedor recebedor= new Recebedor(cliente.getInputStream());
+            new Thread(recebedor).start();
             
             Scanner scan = new Scanner(System.in);
-            //PrintStream saida = new PrintStream(cliente.getOutputStream());
-            String linha=null;
+            PrintStream saida = new PrintStream(cliente.getOutputStream());
             
-            while (!"sair".equalsIgnoreCase(linha)){
+            while (scan.hasNextLine()){
                 
                 //leitura do usuario
-                linha = scan.nextLine();
+                //linha = scan.nextLine();
 
-                saida.println(linha);
+                saida.println(scan.nextLine());
                 saida.flush();
                                 
                 //imprimindo resposta
-                System.out.println("Resposta do server: " + entrada.readLine());
+                //System.out.println("Resposta do server: " + entrada.readLine());
             }
             scan.close();
-            
+            saida.close();
+            cliente.close();
         }
        catch (IOException ex) {
            ex.printStackTrace();
