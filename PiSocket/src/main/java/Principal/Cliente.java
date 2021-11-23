@@ -26,14 +26,14 @@ public class Cliente{
             PrintWriter saida = new PrintWriter(cliente.getOutputStream(), true);
             
             //Leitura do servidor
-            BufferedReader in = new BufferedReader(new InputStreamReader(
+            BufferedReader entrada = new BufferedReader(new InputStreamReader(
                     cliente.getInputStream()));
             
             Scanner scan = new Scanner(System.in);
             //PrintStream saida = new PrintStream(cliente.getOutputStream());
             String linha=null;
             
-            while (!"exit".equalsIgnoreCase(linha)){
+            while (!"sair".equalsIgnoreCase(linha)){
                 
                 //leitura do usuario
                 linha = scan.nextLine();
@@ -42,7 +42,7 @@ public class Cliente{
                 saida.flush();
                                 
                 //imprimindo resposta
-                System.out.println("Resposta do server: " + in.readLine());
+                System.out.println("Resposta do server: " + entrada.readLine());
             }
             scan.close();
             
@@ -50,5 +50,5 @@ public class Cliente{
        catch (IOException ex) {
            ex.printStackTrace();
         }
-}
+    }
 }

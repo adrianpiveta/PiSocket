@@ -6,14 +6,19 @@ package Principal;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author danie
  */
 public class Servidor {
+    
     public static void main(String[] args) {
+        List<PrintStream> clientes = new ArrayList<PrintStream>();
         ServerSocket servidor = null;
+        
         try {
             servidor = new ServerSocket(432);
             //System.out.println("Porta 432 aberta!");
@@ -21,9 +26,10 @@ public class Servidor {
             
             while (true){
                 Socket cliente = servidor.accept();
+                clientes.add(new PrintStream(cliente.getOutputStream()));
                 System.out.println("CLiente conectado: "+cliente.toString());
                 
-                ClientRun r1 = new ClientRun(cliente);
+                ClientRun r1 = new ClientRun(cliente, clientes);
                 
                 new Thread(r1).start();
                 //inicialização do thread
@@ -48,13 +54,21 @@ public class Servidor {
                 }
             }
         }
-     
     }
+    
+    
+    
     public static class ClientRun implements Runnable{
         private final Socket clienteSocket;
+        private List<PrintStream> clientes;
     
         public ClientRun(Socket socket){
             this.clienteSocket = socket;
+        }
+
+        private ClientRun(Socket clienteSock, List<PrintStream> clientes) {
+            this.clienteSocket = clienteSock;
+            this.clientes=clientes;
         }
 
 
@@ -64,6 +78,7 @@ public class Servidor {
 
             try {
                 //saida
+                
                 saida= new PrintWriter(clienteSocket.getOutputStream(),true);
 
                 //entrada
@@ -74,6 +89,7 @@ public class Servidor {
                 while ((linha = entrada.readLine()) != null){
                     System.out.println("Enviado do cliente: "+linha);
                     saida.println(linha);
+                    distribuiMensagens(clientes, linha);
                 }
 
             } catch (Exception e) {
@@ -94,7 +110,10 @@ public class Servidor {
             }
 
         }
+        
+        private void distribuiMensagens(List<PrintStream> clientes, String mensagem) {
+            clientes.forEach(x -> x.print(mensagem+"\n"));
+        }
 
     }
-
-    }
+}
