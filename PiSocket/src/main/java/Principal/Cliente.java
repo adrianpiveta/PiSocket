@@ -26,6 +26,7 @@ public class Cliente{
         this.host=host;
         this.porta=porta;
     }
+    
 
     public void executa(){
         try (Socket cliente = new Socket("192.168.1.105", 432)){
@@ -38,6 +39,7 @@ public class Cliente{
             Recebedor recebedor= new Recebedor(cliente.getInputStream());
             new Thread(recebedor).start();
             
+            //Escrita no servidor
             Scanner scan = new Scanner(System.in);
             PrintStream saida = new PrintStream(cliente.getOutputStream());
             
@@ -46,7 +48,8 @@ public class Cliente{
                 //leitura do usuario
                 //linha = scan.nextLine();
 
-                saida.println(scan.nextLine());
+                saida.println(cliente.getInetAddress() +" "+String.valueOf
+                        (cliente.getLocalPort()) +" diz: "+scan.nextLine());
                 saida.flush();
                                 
                 //imprimindo resposta

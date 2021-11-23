@@ -72,6 +72,7 @@ public class Servidor {
 */
     void distribuiMensagem(String mensagem) {
         clientes.forEach(x -> x.print(mensagem+"\n"));
+        System.out.println(mensagem);
     }
         
     
@@ -80,6 +81,7 @@ public class Servidor {
     public static class ClientRun implements Runnable{
         private final Socket clienteSocket;
         private List<PrintStream> clientes;
+        
     
         public ClientRun(Socket socket){
             this.clienteSocket = socket;
@@ -106,7 +108,6 @@ public class Servidor {
 
                 String linha;
                 while ((linha = entrada.readLine()) != null){
-                    System.out.println("Enviado do cliente: "+linha);
                     saida.println(linha);
                 }
 
